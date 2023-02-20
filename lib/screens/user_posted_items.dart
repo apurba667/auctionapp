@@ -1,38 +1,48 @@
-import 'package:auctionapp/screens/add_auction.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class UserPostedItems extends StatefulWidget {
+  const UserPostedItems({Key? key}) : super(key: key);
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<UserPostedItems> createState() => _UserPostedItemsState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final Stream<QuerySnapshot> productStream =
-      FirebaseFirestore.instance.collection("products").snapshots();
+class _UserPostedItemsState extends State<UserPostedItems> {
+  late FirebaseAuth _auth;
+  var userid;
 
-  addNewAuction() {
-    return showModalBottomSheet(
-        isDismissible: true,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (context) => AddAuction());
+  late Stream<User?> _authStateChanges;
+
+  void initAuth() async {
+    await Future.delayed(Duration(seconds: 2));
+    _auth = FirebaseAuth.instance;
+    _authStateChanges = _auth.authStateChanges();
+    _authStateChanges.listen((User? user) {
+      setState(() {
+        userid = user!.uid;
+      });
+      print("..........................................${userid.toString()}");
+    });
   }
+  @override
+  void initState() {
+    initAuth();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  final Stream<QuerySnapshot> productStream =
+      FirebaseFirestore.instance.collection("4j7U3pqC1ObLiLardIb62n4tE112").snapshots();
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          addNewAuction();
-        },
-        child: Icon(Icons.add),
-      ),
       body: StreamBuilder<QuerySnapshot>(
+
         stream: productStream,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
@@ -62,7 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: FancyShimmerImage(
                             imageUrl: data["img"],
                           )),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Expanded(
                           flex: 1,
                           child: Padding(

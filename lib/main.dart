@@ -1,4 +1,5 @@
 import 'package:auctionapp/firebase_options.dart';
+import 'package:auctionapp/screens/bottom_nav_bar.dart';
 import 'package:auctionapp/screens/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

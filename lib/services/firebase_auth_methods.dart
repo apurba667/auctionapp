@@ -1,4 +1,5 @@
 
+import 'package:auctionapp/screens/bottom_nav_bar.dart';
 import 'package:auctionapp/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,7 +45,7 @@ class FirebaseAuthMethods {
         // transition to another page instead of home screen
       }
       else if(_auth.currentUser!.emailVerified){
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>HomeScreen()));
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>BottomNavBarScreen()));
       }
     } on FirebaseAuthException catch (e) {
       showSnackBar(context, e.message!); // Displaying the error message
@@ -62,4 +63,5 @@ class FirebaseAuthMethods {
 
     }
   }
+
 }
