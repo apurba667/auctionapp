@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class UserPostedItems extends StatefulWidget {
@@ -11,35 +12,12 @@ class UserPostedItems extends StatefulWidget {
 }
 
 class _UserPostedItemsState extends State<UserPostedItems> {
-  late FirebaseAuth _auth;
-  var userid;
-
-  late Stream<User?> _authStateChanges;
-
-  void initAuth() async {
-    await Future.delayed(Duration(seconds: 2));
-    _auth = FirebaseAuth.instance;
-    _authStateChanges = _auth.authStateChanges();
-    _authStateChanges.listen((User? user) {
-      setState(() {
-        userid = user!.uid;
-      });
-      print("..........................................${userid.toString()}");
-    });
-  }
-  @override
-  void initState() {
-    initAuth();
-    // TODO: implement initState
-    super.initState();
-  }
-
   final Stream<QuerySnapshot> productStream =
-      FirebaseFirestore.instance.collection("4j7U3pqC1ObLiLardIb62n4tE112").snapshots();
+      FirebaseFirestore.instance.collection(FirebaseAuth.instance.currentUser!.uid).snapshots();
+
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: StreamBuilder<QuerySnapshot>(
 

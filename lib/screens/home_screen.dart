@@ -1,4 +1,5 @@
 import 'package:auctionapp/screens/add_auction.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,15 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: Colors.transparent,
         context: context,
         builder: (context) => AddAuction());
+  }
+  updateAuction(documentID,data)async{
+    var bidData = data["Bid_price"];
+    var newBidData = int.parse(bidData);
+    var newBidDataAdd = newBidData+20;
+    var collection = FirebaseFirestore.instance.collection('products');
+    collection.doc("${documentID.toString()}").update({
+      "Bid_price": newBidDataAdd.toString()
+    });
   }
 
   @override
@@ -62,7 +72,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: FancyShimmerImage(
                             imageUrl: data["img"],
                           )),
-                      SizedBox(width: 10,),
+                      SizedBox(
+                        width: 10,
+                      ),
                       Expanded(
                           flex: 1,
                           child: Padding(
@@ -71,15 +83,101 @@ class _HomeScreenState extends State<HomeScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(data["product_name"]),
-                                Text(data["product_description"]),
                                 Text(
-                                    "Last Bid Date: ${data["day"]}/${data["month"]}/${data["year"]}"),
+                                  data["product_name"],
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 22),
+                                ),
+                                //  Text(data["product_description"]),
+
+                                // Text(
+                                //    "Last Bid Time: ${data["time_hour"]}:${data["time_minute"]}"),
                                 Text(
-                                    "Last Bid Time: ${data["time_hour"]}:${data["time_minute"]}"),
-                                Text("Bid Price:${data["Bid_price"]}\$"),
+                                  "Bid Price:${data["Bid_price"]}\$",
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  "Last Bid Date: ${data["day"]}/${data["month"]}/${data["year"]}",
+                                  style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+
                                 ElevatedButton(
-                                    onPressed: () {}, child: Text("Bid Now"))
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                        backgroundColor: Colors.cyan,
+                                          context: context,
+                                          builder: (document) {
+                                            return Padding(
+                                              padding: const EdgeInsets.all(20.0),
+                                              child: Container(
+                                                  height: 800,
+                                                  color: Colors.cyan,
+                                                  child: Row(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Expanded(
+                                                        flex:1,
+                                                          child:
+                                                              FancyShimmerImage(
+                                                        imageUrl: data["img"],
+                                                        height: 300,
+                                                        width: 300,boxFit: BoxFit.fill,
+                                                      )),
+                                                      Expanded(
+                                                          flex: 1,
+                                                          child: Padding(
+                                                            padding: const EdgeInsets.all(8.0),
+                                                            child: Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                              children: [
+
+                                                              Text(
+                                                                data["product_name"],
+                                                                style: TextStyle(
+                                                                    fontWeight: FontWeight.bold,
+                                                                    fontSize: 22),
+                                                              ),
+                                                              Text(data["product_description"],style: TextStyle(
+                                                                  fontSize: 18,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.bold),),
+                                                            Text(
+                                                                 "Last Bid Time: ${data["time_hour"]}:${data["time_minute"]}",style: TextStyle(
+                                                                fontSize: 18,
+                                                                color: Colors.black,
+                                                                fontWeight: FontWeight.bold),),
+                                                              Text(
+                                                                "Bid Price:${data["Bid_price"]}\$",
+                                                                style: TextStyle(
+                                                                    fontSize: 18,
+                                                                    color: Colors.black,
+                                                                    fontWeight: FontWeight.bold),
+                                                              ),
+                                                              Text(
+                                                                "Last Bid Date: ${data["day"]}/${data["month"]}/${data["year"]}",
+                                                                style: TextStyle(
+                                                                    fontSize: 15,
+                                                                    fontWeight: FontWeight.bold),
+                                                              ),
+                                                                ElevatedButton(onPressed: (){
+                                                                  updateAuction(document,data);
+                                                                }, child: Text("Place Bid"))
+
+                                                      ],),
+                                                          ))
+                                                    ],
+                                                  )),
+                                            );
+                                          });
+                                    },
+                                    child: Text("Bid Now"))
                               ],
                             ),
                           ))
